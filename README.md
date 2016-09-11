@@ -1,5 +1,6 @@
 OAuth Client
 ============
+[![Build Status](https://travis-ci.org/sjmelia/OAuth.Client.svg)](https://travis-ci.org/sjmelia/OAuth.Client)
 [![nuget](https://img.shields.io/badge/nuget-v5.3.0-blue.svg)](https://www.nuget.org/packages/ArrayOfBytes.OAuth.Client/1.0.0)
 
 A minimal dotnetcore library for authorising against OAuth services, useful for e.g. connecting to the Twitter API.
