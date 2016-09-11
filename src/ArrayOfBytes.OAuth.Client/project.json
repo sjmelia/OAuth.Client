@@ -1,0 +1,23 @@
+{
+  "title": "Minimal OAuth MessageHandler",
+  "version": "1.0.0-*",
+  "authors": [ "Steve Melia" ],
+  "description": "OAuth MessageHandler for dotnetcore; a minimal implementation of the OAuth 1.0 standard for use with HttpClient",
+  "packOptions": {
+    "repository": { "url": "https://github.com/sjmelia/oauth.client" },
+    "licenseUrl": "https://opensource.org/licenses/MIT",
+    "requireLicenseAcceptance": true,
+    "owners": [ "Steve Melia" ],
+    "tags": ["dotnetcore", "oauth", "httpclient", "messagehandler"]
+  },
+  "dependencies": {
+    "Microsoft.AspNetCore.WebUtilities": "1.0.0",
+    "NETStandard.Library": "1.6.0"
+  },
+
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50"
+    }
+  }
+}
