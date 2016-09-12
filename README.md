@@ -20,4 +20,5 @@ var handler = new OAuthHttpMessageHandler(config);
 this.client = new HttpClient(handler);
 ```
 
-Subsequent requests will have an `Authorization: OAuth ...` header.
+Subsequent requests will have an `Authorization: OAuth ...` header. For further examples; have a look
+at [TeensyTwitter](https://github.com/sjmelia/TeensyTwitter) which uses this library.
