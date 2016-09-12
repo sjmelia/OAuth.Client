@@ -17,7 +17,8 @@
         /// <returns>Async task</returns>
         public static async Task AddOAuthHeader(this HttpRequestMessage request, OAuthHeaderFactory headerFactory)
         {
-            request.Headers.Authorization = new AuthenticationHeaderValue("OAuth", await headerFactory.GetAuthorisationHeaderParameter(request));
+            var headerParam = await headerFactory.GetAuthorisationHeaderParameter(request).ConfigureAwait(false);
+            request.Headers.Authorization = new AuthenticationHeaderValue("OAuth", headerParam);
         }
     }
 }

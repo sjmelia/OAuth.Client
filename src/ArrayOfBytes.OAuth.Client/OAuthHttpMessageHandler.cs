@@ -41,8 +41,8 @@
         /// <returns>The response.</returns>
         protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            await request.AddOAuthHeader(this.headerFactory);
-            return await base.SendAsync(request, cancellationToken);
+            await request.AddOAuthHeader(this.headerFactory).ConfigureAwait(false);
+            return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
     }
 }

@@ -73,7 +73,7 @@
                 this.config,
                 nonce,
                 timestamp,
-                OAuthVersion);
+                OAuthVersion).ConfigureAwait(false);
 
             return Uri.EscapeDataString("oauth_consumer_key")
                 + PAIR + Uri.EscapeDataString(this.config.ConsumerKey)

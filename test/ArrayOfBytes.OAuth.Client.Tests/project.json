@@ -4,7 +4,7 @@
   "dependencies": {
     "ArrayOfBytes.OAuth.Client": {
       "target": "project",
-      "version": "1.0.0-*"
+      "version": "1.0.2-*"
     },
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "Microsoft.NETCore.App": {

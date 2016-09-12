@@ -51,7 +51,7 @@
                 config,
                 nonce,
                 timestamp,
-                version);
+                version).ConfigureAwait(false);
             var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(signatureBase));
             return Convert.ToBase64String(hash);
         }
@@ -77,7 +77,7 @@
                 config,
                 nonce,
                 timestamp,
-                version);
+                version).ConfigureAwait(false);
 
             var url = request.RequestUri.GetComponents(
                 UriComponents.Scheme
@@ -112,9 +112,9 @@
             if (request.Content != null &&
                 request.Content.Headers.ContentType.MediaType == "application/x-www-form-urlencoded")
             {
-                var content = await request.Content.ReadAsStringAsync();
+                var content = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var fr = new FormReader(content);
-                parameters.Merge(await fr.ReadFormAsync());
+                parameters.Merge(await fr.ReadFormAsync().ConfigureAwait(false));
             }
 
             var queryParams = QueryHelpers.ParseQuery(request.RequestUri.Query);
