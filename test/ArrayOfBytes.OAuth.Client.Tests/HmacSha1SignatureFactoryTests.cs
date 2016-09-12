@@ -10,16 +10,10 @@ namespace ArrayOfBytes.OAuth.Client.Tests
 {
     public class HmacSha1SignatureFactoryTests
     {
-        private HttpRequestMessage request;
-
         private OAuthConfig config;
 
         public HmacSha1SignatureFactoryTests()
         {
-            this.request = new HttpRequestMessage(HttpMethod.Post, "https://api.twitter.com/1/statuses/update.json?include_entities=true");
-            KeyValuePair<string, string> status = new KeyValuePair<string, string>("status", "Hello Ladies + Gentlemen, a signed OAuth request!");
-            this.request.Content = new FormUrlEncodedContent(new KeyValuePair<string, string>[] { status });
-
             this.config = new OAuthConfig(
                 "xvz1evFS4wEEPTGEFPHBog",
                 "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw",
@@ -27,12 +21,26 @@ namespace ArrayOfBytes.OAuth.Client.Tests
                 "LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE");
         }
 
+        private HttpRequestMessage PostMessage()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.twitter.com/1/statuses/update.json?include_entities=true");
+            KeyValuePair<string, string> status = new KeyValuePair<string, string>("status", "Hello Ladies + Gentlemen, a signed OAuth request!");
+            request.Content = new FormUrlEncodedContent(new KeyValuePair<string, string>[] { status });
+            return request;
+        }
+
+        private HttpRequestMessage GetMessage()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://api.twitter.com/1.1/statuses/home_timeline.json");
+            return request;
+        }
+
         [Fact]
-        public async void CheckSignature()
+        public async void CheckSignaturePost()
         {
             var factory = new HmacSha1SignatureFactory();
             var actual = await factory.Get(
-                this.request,
+                this.PostMessage(),
                 this.config,
                 "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg",
                 "1318622958",
@@ -42,11 +50,25 @@ namespace ArrayOfBytes.OAuth.Client.Tests
         }
 
         [Fact]
+        public async void CheckSignatureGet()
+        {
+            var factory = new HmacSha1SignatureFactory();
+            var actual = await factory.Get(
+                this.GetMessage(),
+                this.config,
+                "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg",
+                "1318622958",
+                "1.0");
+
+            Assert.Equal("MChed2Nhee5rRVbvne6/Ix8EwpY=", actual);
+        }
+
+        [Fact]
         public async void CheckParameterSignature()
         {            
             var factory = new HmacSha1SignatureFactory();
             var actual = await factory.GetParameterBase(
-                this.request,
+                this.PostMessage(),
                 this.config,
                 "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg", 
                 "1318622958",
@@ -60,7 +82,7 @@ namespace ArrayOfBytes.OAuth.Client.Tests
         {
             var factory = new HmacSha1SignatureFactory();
             var actual = await factory.GetSignatureBase(
-                this.request,
+                this.PostMessage(),
                 this.config,
                 "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg",
                 "1318622958",

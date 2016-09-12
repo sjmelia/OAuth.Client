@@ -1,9 +1,12 @@
-﻿using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-
-namespace ArrayOfBytes.OAuth.Client
+﻿namespace ArrayOfBytes.OAuth.Client
 {
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
+
+    /// <summary>
+    /// Extension methods for adding OAuth header to HttpRequestMessages.
+    /// </summary>
     public static class HttpRequestMessageExtensions
     {
         /// <summary>

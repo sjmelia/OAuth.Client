@@ -1,16 +1,23 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace ArrayOfBytes.OAuth.Client
+﻿namespace ArrayOfBytes.OAuth.Client
 {
+    using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+
+    /// <summary>
+    /// Factory for creating OAuth headers for HTTP requests.
+    /// </summary>
     public class OAuthHeaderFactory
     {
-        private static string OAUTH_VERSION = "1.0";
+        private static readonly string OAuthVersion = "1.0";
 
-        private static string SEPARATOR = "\", ";
+        private static readonly string SEPARATOR = "\", ";
 
-        private static string PAIR = "=\"";
+        private static readonly string PAIR = "=\"";
+
+        private static readonly Random Random = new Random();
+
+        private static readonly object RandLock = new object();
 
         private Func<string> nonceFactory;
 
@@ -20,18 +27,26 @@ namespace ArrayOfBytes.OAuth.Client
 
         private OAuthConfig config;
 
-        private static Random random = new Random();
-
-        private static object randLock = new object();
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OAuthHeaderFactory"/> class for the given config, with default options.
+        /// </summary>
+        /// <param name="config">The OAuth config.</param>
         public OAuthHeaderFactory(OAuthConfig config)
-            : this(config,
+            : this(
+                  config,
                   DefaultNonceFactory,
                   DefaultTimestampFactory,
                   new HmacSha1SignatureFactory())
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OAuthHeaderFactory"/> class for the given config and options.
+        /// </summary>
+        /// <param name="config">OAuth config.</param>
+        /// <param name="nonceFactory">Method of creating a nonce.</param>
+        /// <param name="timestampFactory">Method of generating a timestamp.</param>
+        /// <param name="signatureProvider">Method of signing the request.</param>
         public OAuthHeaderFactory(
             OAuthConfig config,
             Func<string> nonceFactory,
@@ -44,19 +59,11 @@ namespace ArrayOfBytes.OAuth.Client
             this.signatureFactory = signatureProvider;
         }
 
-        private static string DefaultNonceFactory()
-        {
-            lock (randLock)
-            {
-                return random.Next(0, Int32.MaxValue).ToString("X8");
-            }
-        }
-
-        private static string DefaultTimestampFactory()
-        {
-            return DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-        }
-
+        /// <summary>
+        /// Gets a string representation of the OAuth authorisation header parameter.
+        /// </summary>
+        /// <param name="request">The request for which to get the header.</param>
+        /// <returns>The OAuth authorisation header value.</returns>
         public async Task<string> GetAuthorisationHeaderParameter(HttpRequestMessage request)
         {
             var nonce = this.nonceFactory();
@@ -66,7 +73,7 @@ namespace ArrayOfBytes.OAuth.Client
                 this.config,
                 nonce,
                 timestamp,
-                OAUTH_VERSION);
+                OAuthVersion);
 
             return Uri.EscapeDataString("oauth_consumer_key")
                 + PAIR + Uri.EscapeDataString(this.config.ConsumerKey)
@@ -81,8 +88,21 @@ namespace ArrayOfBytes.OAuth.Client
                 + SEPARATOR + Uri.EscapeDataString("oauth_token")
                 + PAIR + Uri.EscapeDataString(this.config.AccessToken)
                 + SEPARATOR + Uri.EscapeDataString("oauth_version")
-                + PAIR + Uri.EscapeDataString(OAUTH_VERSION)
+                + PAIR + Uri.EscapeDataString(OAuthVersion)
                 + "\"";
+        }
+
+        private static string DefaultNonceFactory()
+        {
+            lock (RandLock)
+            {
+                return Random.Next(0, int.MaxValue).ToString("X8");
+            }
+        }
+
+        private static string DefaultTimestampFactory()
+        {
+            return DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
         }
     }
 }

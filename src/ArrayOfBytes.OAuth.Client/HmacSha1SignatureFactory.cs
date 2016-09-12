@@ -1,17 +1,23 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Primitives;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ArrayOfBytes.OAuth.Client
+﻿namespace ArrayOfBytes.OAuth.Client
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Security.Cryptography;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.WebUtilities;
+    using Microsoft.Extensions.Primitives;
+
+    /// <summary>
+    /// Creation of OAuth 1.0a signatures.
+    /// </summary>
     public class HmacSha1SignatureFactory : ISignatureFactory
     {
+        /// <summary>
+        /// Gets the method used to generate the signature.
+        /// </summary>
         public string SignatureMethod
         {
             get
@@ -29,7 +35,8 @@ namespace ArrayOfBytes.OAuth.Client
         /// <param name="timestamp">The timestamp for this request.</param>
         /// <param name="version">The OAuth version string.</param>
         /// <returns>OAuth signature string.</returns>
-        public async Task<string> Get(HttpRequestMessage request,
+        public async Task<string> Get(
+            HttpRequestMessage request,
             OAuthConfig config,
             string nonce,
             string timestamp,
@@ -48,40 +55,62 @@ namespace ArrayOfBytes.OAuth.Client
             var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(signatureBase));
             return Convert.ToBase64String(hash);
         }
-        
-        public async Task<string> GetSignatureBase(HttpRequestMessage request,
+
+        /// <summary>
+        /// Format the given parameters into the signature base string.
+        /// </summary>
+        /// <param name="request">The HTTP request to be signed.</param>
+        /// <param name="config">OAuth config information.</param>
+        /// <param name="nonce">The nonce for this request.</param>
+        /// <param name="timestamp">The timestamp for this request.</param>
+        /// <param name="version">The OAuth version string.</param>
+        /// <returns>OAuth Signature base string.</returns>
+        public async Task<string> GetSignatureBase(
+            HttpRequestMessage request,
             OAuthConfig config,
             string nonce,
             string timestamp,
             string version)
         {
-            var parameterBase = await this.GetParameterBase(request,
+            var parameterBase = await this.GetParameterBase(
+                request,
                 config,
                 nonce,
                 timestamp,
                 version);
 
             var url = request.RequestUri.GetComponents(
-                UriComponents.Scheme 
-                | UriComponents.UserInfo 
-                | UriComponents.Host 
-                | UriComponents.Port 
+                UriComponents.Scheme
+                | UriComponents.UserInfo
+                | UriComponents.Host
+                | UriComponents.Port
                 | UriComponents.Path,
                 UriFormat.Unescaped);
-            
+
             return request.Method.ToString().ToUpper()
                 + "&" + Uri.EscapeDataString(url)
                 + "&" + Uri.EscapeDataString(parameterBase);
         }
 
-        public async Task<string> GetParameterBase(HttpRequestMessage request,
+        /// <summary>
+        /// Gets the parameter base string.
+        /// </summary>
+        /// <param name="request">The HTTP request to be signed.</param>
+        /// <param name="config">OAuth config information.</param>
+        /// <param name="nonce">The nonce for this request.</param>
+        /// <param name="timestamp">The timestamp for this request.</param>
+        /// <param name="version">The OAuth version.</param>
+        /// <returns>The parameter base string.</returns>
+        public async Task<string> GetParameterBase(
+            HttpRequestMessage request,
             OAuthConfig config,
             string nonce,
             string timestamp,
             string version)
         {
             Dictionary<string, StringValues> parameters = new Dictionary<string, StringValues>();
-            if (request.Content.Headers.ContentType.MediaType == "application/x-www-form-urlencoded")
+            if (request.Content != null &&
+                request.Content.Headers.ContentType.MediaType == "application/x-www-form-urlencoded")
             {
                 var content = await request.Content.ReadAsStringAsync();
                 var fr = new FormReader(content);
@@ -97,7 +126,7 @@ namespace ArrayOfBytes.OAuth.Client
             parameters.Add("oauth_timestamp", timestamp);
             parameters.Add("oauth_token", config.AccessToken);
             parameters.Add("oauth_version", version);
-            
+
             string parameterBase = string.Empty;
             foreach (var param in parameters.OrderBy(pair => pair.Key))
             {

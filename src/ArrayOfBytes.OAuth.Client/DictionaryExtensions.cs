@@ -1,9 +1,12 @@
-﻿using Microsoft.Extensions.Primitives;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace ArrayOfBytes.OAuth.Client
+﻿namespace ArrayOfBytes.OAuth.Client
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.Extensions.Primitives;
+
+    /// <summary>
+    /// Extensions for dictionaries of StringValues.
+    /// </summary>
     public static class DictionaryExtensions
     {
         /// <summary>
