@@ -12,8 +12,8 @@ addons:
     - libssl-dev
     - libunwind8
     - zlib1g
-#mono:  
-#  - 4.2.3
+mono:  
+  - 4.4.2
 os:  
   - linux
 #  - osx
